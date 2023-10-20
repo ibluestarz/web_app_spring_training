@@ -1,35 +1,27 @@
 package fr.lernejo.todo;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
+@RequestMapping("api/todo")
 public class TodoListController {
-    
-    public final TodoRepository repo;
 
-    public TodoListController(@Autowired TodoRepository repo){
-        this.repo = repo;
+    private final TodoRepository repository;
+    TodoListController(TodoRepository todoRepository) {
+        repository = todoRepository;
     }
     
-    @GetMapping(path = "api/todo")
-    public ResponseEntity<TodoRepository> getTodo(){
-        return new ResponseEntity<>(this.repo, HttpStatus.OK);
+    @GetMapping
+    public Iterable<TodoEntity> getTodo() {
+        return repository.findAll();
     }
 
-    @PostMapping(path = "api/todo",
-        consumes = MediaType.APPLICATION_JSON_VALUE, 
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    public void addTodo(@RequestBody Todo newTodo){
-        TodoEntity toSave = new TodoEntity(newTodo);
-        this.repo.save(toSave); 
+    @PostMapping
+    public void addTodo(@RequestBody TodoEntity todo) {
+        repository.save(todo);
     }
 }
